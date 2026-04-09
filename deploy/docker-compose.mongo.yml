@@ -1,0 +1,32 @@
+# MongoDB deployment: MongoDB for metadata + local filesystem for blobs.
+#
+# Usage: docker compose -f deploy/docker-compose.mongo.yml up -d
+# UI: http://localhost:8080
+# Admin: admin / changeme
+
+services:
+  app:
+    build: ..
+    ports:
+      - "18080:8080"
+    environment:
+      DB_DRIVER: mongo
+      MONGO_URI: mongodb://mongo:27017/bsr
+      STORAGE_DRIVER: local
+      STORAGE_PATH: /data/modules
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: changeme
+      OPEN_REGISTRATION: "true"
+    volumes:
+      - module-data:/data/modules
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+  module-data:

@@ -1,0 +1,25 @@
+# Default deployment: SQLite + local storage. No external dependencies.
+# For other configurations, see deploy/ directory.
+#
+# Usage: docker compose up -d
+# UI: http://localhost:8080
+# Admin: admin / changeme
+
+services:
+  app:
+    build: .
+    ports:
+      - "18080:8080"
+    environment:
+      DB_DRIVER: sqlite
+      SQLITE_PATH: /data/bsr.db
+      STORAGE_DRIVER: local
+      STORAGE_PATH: /data/modules
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: changeme
+      OPEN_REGISTRATION: "true"
+    volumes:
+      - app-data:/data
+
+volumes:
+  app-data:

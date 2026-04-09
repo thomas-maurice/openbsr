@@ -1,0 +1,25 @@
+# Simplest deployment: SQLite + local filesystem storage.
+# No external dependencies. Single container.
+#
+# Usage: docker compose -f deploy/docker-compose.sqlite.yml up -d
+# UI: http://localhost:8080 (or https://localhost:8080 if TLS_CERT/TLS_KEY are set)
+# Admin: admin / changeme
+
+services:
+  app:
+    build: ..
+    ports:
+      - "18080:8080"
+    environment:
+      DB_DRIVER: sqlite
+      SQLITE_PATH: /data/bsr.db
+      STORAGE_DRIVER: local
+      STORAGE_PATH: /data/modules
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: changeme
+      OPEN_REGISTRATION: "true"
+    volumes:
+      - app-data:/data
+
+volumes:
+  app-data:

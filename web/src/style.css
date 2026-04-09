@@ -1,0 +1,5 @@
+/* Global custom styles for OpenBSR */
+
+/* FontAwesome icon spacing */
+.fas, .far, .fab { margin-right: 0.35em; }
+.navbar-brand .fas { margin-right: 0.4em; }

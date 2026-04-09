@@ -1,0 +1,49 @@
+# S3 storage deployment: SQLite for metadata + Garage (S3-compatible) for blobs.
+# Garage is a lightweight, self-hosted S3 alternative.
+#
+# Usage:
+#   docker compose -f deploy/docker-compose.garage.yml up -d
+#   # Wait ~5s for Garage to start, then bootstrap it:
+#   bash deploy/garage-setup.sh
+#   # UI: http://localhost:8080
+#   # Admin: admin / changeme
+#
+# The setup script creates the S3 bucket and API key, then restarts the app
+# container with the correct credentials.
+
+services:
+  app:
+    build: ..
+    ports:
+      - "18080:8080"
+    environment:
+      DB_DRIVER: sqlite
+      SQLITE_PATH: /data/bsr.db
+      STORAGE_DRIVER: s3
+      S3_ENDPOINT: http://garage:3900
+      S3_REGION: garage
+      S3_BUCKET: openbsr
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-placeholder}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-placeholder}
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: changeme
+      OPEN_REGISTRATION: "true"
+    volumes:
+      - app-data:/data
+    depends_on:
+      - garage
+
+  garage:
+    image: dxflrs/garage:v1.0.1
+    ports:
+      - "3903:3903"   # Admin API (for setup script)
+      - "3900:3900"   # S3 API
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+      - garage-meta:/tmp/garage/meta
+      - garage-data:/tmp/garage/data
+
+volumes:
+  app-data:
+  garage-meta:
+  garage-data:
